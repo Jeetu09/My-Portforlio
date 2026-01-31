@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prasenjeet Sonawane - Game Designer & Artist</title>
+    <!-- Load Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Styles & Neon Theme */
+        :root {
+            --neon-color: #0ff; /* Neon Cyan */
+            --bg-dark: #0a0a0a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f0f0f0;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="%230ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>') 16 16, auto; /* Gamified Cursor */
+        }
+
+        /* Neon Glow Effect Class */
+        .neon-glow {
+            text-shadow: 0 0 5px var(--neon-color), 0 0 10px var(--neon-color), 0 0 20px rgba(0, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        .neon-glow:hover {
+            text-shadow: 0 0 8px var(--neon-color), 0 0 15px var(--neon-color), 0 0 30px rgba(0, 255, 255, 0.7);
+        }
+
+        /* Subtle Background Particles (Pure CSS) */
+        .particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: radial-gradient(circle at 10% 20%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 90% 80%, rgba(128, 0, 128, 0.1) 0%, transparent 50%);
+            animation: pulse 10s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { background-size: 200% 200%; background-position: 0% 0%; }
+            100% { background-size: 150% 150%; background-position: 100% 100%; }
+        }
+
+        /* Custom Neon Button */
+        .neon-btn {
+            background: transparent;
+            border: 2px solid var(--neon-color);
+            color: var(--neon-color);
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+            transition: all 0.3s ease-in-out;
+        }
+        .neon-btn:hover {
+            background-color: var(--neon-color);
+            color: var(--bg-dark);
+            box-shadow: 0 0 20px var(--neon-color);
+            transform: scale(1.05);
+        }
+
+        /* Loading Screen Overlay */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease-out;
+        }
+        .loader-text {
+            color: var(--neon-color);
+            font-size: 1.5rem;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Progress Bar Styling */
+        .progress-bar {
+            height: 8px;
+            background-color: #1f2937; /* Dark background */
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: var(--neon-color);
+            transition: width 1.5s ease-out;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Custom Scrollbar for a more integrated look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 255, 255, 0.4); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 255, 255, 0.6); }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        
+        /* Utility class for card hover effect */
+        .project-card:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Loading Screen (Enhancement) -->
+    <div id="loading-screen">
+        <div class="loader-text">
+            [ <i data-lucide="gamepad" class="inline w-6 h-6 mr-2"></i> Loading Assets... ]
+        </div>
+    </div>
+    
+    <!-- Subtle Particle Background -->
+    <div class="particle-bg"></div>
+
+    <!-- Fixed Header Navigation -->
+    <header class="sticky top-0 z-40 bg-opacity-95 backdrop-blur-sm bg-black border-b border-cyan-800/20">
+        <nav class="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex justify-between items-center">
+            <!-- Logo/Name -->
+            <a href="#home" class="text-2xl font-bold tracking-wider text-white neon-glow">
+                Prasenjeet.<span class="text-cyan-400">S</span>
+            </a>
+            <!-- Desktop Navigation Links -->
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="text-sm font-medium hover:text-cyan-400 transition duration-200">Home</a>
+                <a href="#about" class="text-sm font-medium hover:text-cyan-400 transition duration-200">About</a>
+                <a href="#skills" class="text-sm font-medium hover:text-cyan-400 transition duration-200">Skills</a>
+                <a href="#projects" class="text-sm font-medium hover:text-cyan-400 transition duration-200">Projects</a>
+                <a href="#contact" class="neon-btn text-xs px-4 py-2">Contact Me</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 lg:px-8">
+
+        <!-- 🏠 1. Home (Hero Section) -->
+        <section id="home" class="min-h-screen flex items-center pt-20 pb-10">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Text Content -->
+                <div class="order-2 md:order-1">
+                    <p class="text-lg text-gray-400 mb-2">Hello, I'm</p>
+                    <h1 class="text-6xl md:text-8xl font-extrabold mb-4 leading-tight">
+                        <span class="text-white neon-glow block">Prasenjeet</span>
+                        <span class="text-cyan-400 neon-glow block">Sonawane</span>
+                    </h1>
+                    <h2 class="text-2xl font-semibold mb-4 text-white">
+                        A <span class="neon-glow">Unity 3D | AR/VR | UI/UX Designer</span> specializing in Interactive Design.
+                    </h2>
+                    <!-- Resume Summary Integrated -->
+                    <p id="tagline-output" class="text-xl text-gray-300 h-8 mb-8 font-mono tracking-wide"></p>
+                    <p class="text-gray-400 mb-8 max-w-lg">
+                        Creative developer and designer with proven expertise in Unity 3D, AR/VR development, and UI/UX design. Passionate about building interactive 3D experiences, gamified applications, and immersive projects. Experienced in full-stack development, 3D modeling, and research publications, seeking a challenging role to leverage technical and design skills.
+                    </p>
+
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <a href="#projects" class="neon-btn bg-cyan-500 text-black shadow-lg shadow-cyan-500/50 hover:bg-cyan-600 hover:text-black hover:shadow-cyan-400/80">
+                            Explore My Projects
+                        </a>
+                        <button onclick="document.getElementById('download-resume').click()" class="neon-btn">
+                            <i data-lucide="download" class="inline w-4 h-4 mr-2"></i> Download Resume
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game/Art Placeholder (Image/Video) -->
+                
+
+                <img src="Images\Gemini_Generated_Image_3tk94q3tk94q3tk9-removebg-preview.png" alt="Prasenjeet Sonawane Profile Image" class="object-cover w-full h-full rounded-full" onerror="this.onerror=null;" />
+                
+
+                
+
+            </div>
+        </section>
+
+        <!-- --- -->
+        <!-- 👤 2. About Me -->
+        <section id="about" class="py-20 border-t border-cyan-800/30">
+            <h2 class="text-5xl font-bold mb-12 text-center neon-glow">
+                About <span class="text-cyan-400">Me</span> & Education
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- Education & Summary -->
+                <div>
+                    <h3 class="text-3xl font-semibold mb-4 text-white">Education</h3>
+                    <ul class="space-y-4 text-gray-300">
+                        <li class="flex items-start bg-gray-900/50 p-4 rounded-lg border-l-4 border-cyan-500">
+                            <i data-lucide="graduation-cap" class="w-6 h-6 text-cyan-400 mt-1 mr-3 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Bachelor of Engineering: Computer Engineer</strong>
+                                <p>Pune Institute Of Computer Technology, Pune</p>
+                                <p class="text-sm text-gray-400">Graduated: 06/2024</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start bg-gray-900/50 p-4 rounded-lg border-l-4 border-gray-500">
+                            <i data-lucide="book-open-text" class="w-6 h-6 text-gray-400 mt-1 mr-3 flex-shrink-0"></i>
+                            <div>
+                                <strong class="text-white">Higher Secondary & Secondary Education</strong>
+                                <p>M.J.S.V. Shrigonda</p>
+                                <p class="text-sm text-gray-400">01/2018 - 01/2020</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Experience Timeline -->
+                <div class="relative pl-6 before:content-[''] before:absolute before:top-0 before:left-0 before:bottom-0 before:w-1 before:bg-cyan-900/50">
+                    <h3 class="text-3xl font-semibold mb-6 text-white">Professional Experience</h3>
+                    
+                    <!-- Timeline Item 1: CDAC Internship -->
+                    <div class="mb-8 relative pl-6 before:content-[''] before:absolute before:w-4 before:h-4 before:bg-cyan-500 before:border-2 before:border-cyan-800 before:rounded-full before:-left-2 before:top-1">
+                        <p class="text-sm text-gray-400">09/2024 – Current</p>
+                        <h4 class="font-bold text-white text-lg">Intern: Project Development</h4>
+                        <p class="text-cyan-400">C-DAC Mumbai, Mumbai, India</p>
+                        <p class="text-gray-300 text-sm mt-1">
+                            Executed responsibilities as project intern, creating 3D games and animations for student learning. Applied Unity technology to generate captivating educational resources.
+                        </p>
+                    </div>
+
+                    <!-- Timeline Item 2: ACM Design Head -->
+                    <div class="mb-8 relative pl-6 before:content-[''] before:absolute before:w-4 before:h-4 before:bg-cyan-500 before:border-2 before:border-cyan-800 before:rounded-full before:-left-2 before:top-1">
+                        <p class="text-sm text-gray-400">01/2023 </p>
+                        <h4 class="font-bold text-white text-lg">Design Team Head</h4>
+                        <p class="text-cyan-400">ACM India Student Chapter of PICT</p>
+                        <p class="text-gray-300 text-sm mt-1">
+                            Led 50+ members for Graphics designing and marketing. Conducted 10+ workshops for the team.
+                        </p>
+                    </div>
+                    
+                    <!-- Timeline Item 3: GameDevUthopia -->
+                    <div class="relative pl-6 before:content-[''] before:absolute before:w-4 before:h-4 before:bg-cyan-500 before:border-2 before:border-cyan-800 before:rounded-full before:-left-2 before:top-1">
+                        <p class="text-sm text-gray-400">01/2021</p>
+                        <h4 class="font-bold text-white text-lg">Team Member</h4>
+                        <p class="text-cyan-400">GameDevUthopia</p>
+                        <p class="text-gray-300 text-sm mt-1">
+                            3D model developer and Animation and level design..
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- --- -->
+        <!-- 🎮 3. Skills Section -->
+        <section id="skills" class="py-20 border-t border-cyan-800/30">
+            <h2 class="text-5xl font-bold mb-12 text-center neon-glow">
+                My <span class="text-cyan-400">Technical</span> Skillset
+            </h2>
+
+            <div class="space-y-12">
+                <!-- Game Dev & Engines -->
+                <div>
+                    <h3 class="text-3xl font-semibold mb-6 text-cyan-400 flex items-center">
+                        <i data-lucide="rocket" class="w-6 h-6 mr-3"></i> Game Development & AR/VR
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div class="p-4 bg-gray-900 rounded-lg shadow-lg">
+                            <p class="font-semibold text-white">Unity</p>
+                            <p class="text-sm text-gray-400">Primary Game Engine, C# Scripting.</p>
+                            <div class="progress-bar mt-2"><div class="progress-fill" style="width: 88%;"></div></div>
+                        </div>
+                        <div class="p-4 bg-gray-900 rounded-lg shadow-lg">
+                            <p class="font-semibold text-white">AR/VR (Virtuosity)</p>
+                            <p class="text-sm text-gray-400">Augmented/Virtual Reality Development & SDKs.</p>
+                            <div class="progress-bar mt-2"><div class="progress-fill" style="width: 85%;"></div></div>
+                        </div>
+                        <div class="p-4 bg-gray-900 rounded-lg shadow-lg">
+                            <p class="font-semibold text-white">Tiled</p>
+                            <p class="text-sm text-gray-400">Tilemap Editor for 2D Level Design.</p>
+                            <div class="progress-bar mt-2"><div class="progress-fill" style="width: 75%;"></div></div>
+                        </div>
+                        <div class="p-4 bg-gray-900 rounded-lg shadow-lg">
+                            <p class="font-semibold text-white">C++ / C#</p>
+                            <p class="text-sm text-gray-400">Core programming and backend logic.</p>
+                            <div class="progress-bar mt-2"><div class="progress-fill" style="width: 90%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3D & Creative Tools -->
+                <div>
+                    <h3 class="text-3xl font-semibold mb-6 text-cyan-400 flex items-center">
+                        <i data-lucide="palette" class="w-6 h-6 mr-3"></i> 3D Modeling & Creative Suite
+                    </h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div class="p-4 bg-gray-900 rounded-lg shadow-lg">
+                            <p class="font-semibold text-white">Blender</p>
+                            <p class="text-sm text-gray-400">3D Modeling, Texturing, and Animation.</p>
+                            <div class="progress-bar mt-2"><div class="progress-fill" style="width: 92%;"></div></div>
+                        </div>
+                        <div class="p-4 bg-gray-900 rounded-lg shadow-lg">
+                            <p class="font-semibold text-white">Adobe Photoshop</p>
+                            <p class="text-sm text-gray-400">Texture creation and 2D artwork.</p>
+                            <div class="progress-bar mt-2"><div class="progress-fill" style="width: 80%;"></div></div>
+                        </div>
+                        <div class="p-4 bg-gray-900 rounded-lg shadow-lg">
+                            <p class="font-semibold text-white">Figma / UI/UX</p>
+                            <p class="text-sm text-gray-400">Wireframing and Game Menu Design.</p>
+                            <div class="progress-bar mt-2"><div class="progress-fill" style="width: 95%;"></div></div>
+                        </div>
+                        <div class="p-4 bg-gray-900 rounded-lg shadow-lg">
+                            <p class="font-semibold text-white">A. Effects / P. Pro / Canva</p>
+                            <p class="text-sm text-gray-400">Video editing and motion graphics.</p>
+                            <div class="progress-bar mt-2"><div class="progress-fill" style="width: 85%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- --- -->
+        <!-- 🧱 4. Projects / Works (Reflecting Resume Projects) -->
+        <section id="projects" class="py-20 border-t border-cyan-800/30">
+            <h2 class="text-5xl font-bold mb-12 text-center neon-glow">
+                Featured <span class="text-cyan-400">Projects</span>
+            </h2>
+
+            <!-- Project Grid: 6 projects, 3 columns on desktop, 2 on tablet -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Project Card 1: AI-Based VR Gaming Application -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 transition duration-300 group project-card">
+                    <div class="h-48 bg-gray-800 flex items-center justify-center relative">
+                        <!-- Game Thumbnail Placeholder -->
+                        <img src="Images\Area.png" alt="FInd The Area" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition">Find The Area</h3>
+                        <p class="text-gray-400 text-sm mb-3">Find the area is unity 3d first person game which help students to understand area of 2d shapes in real life objects.</p>
+                        <div class="text-xs text-gray-500 space-y-1 mt-4">
+                            <p><strong class="text-white">Engine:</strong> Unity Engine</p>
+                            <p><strong class="text-white">Modeling:</strong> Blender (Assets)</p>
+                            <p><strong class="text-white">Focus:</strong> Object detection, Logical thinking</p>
+                        </div>
+                        <a href="https://cdac.olabs.edu.in/?sub=80&brch=89&sim=985&cnt=4" class="mt-4 inline-flex items-center text-cyan-400 hover:underline text-sm">
+                            View Game <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Project Card 2: Interactive VR Environment -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 transition duration-300 group project-card">
+                    <div class="h-48 bg-gray-800 flex items-center justify-center relative">
+                        <!-- Game Thumbnail Placeholder -->
+                        <img src="Images\prob.png" alt="Virtual Reality application for Interactive Environment" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition">Probability Fair</h3>
+                        <p class="text-gray-400 text-sm mb-3">A 3D game to understand real life application and visualisation of mathematical application of probability usinng 3D interactive environment</p>
+                        <div class="text-xs text-gray-500 space-y-1 mt-4">
+                            <p><strong class="text-white">Engine:</strong> Unity</p>
+                            <p><strong class="text-white">Modeling:</strong> Blender</p>
+                            <p><strong class="text-white">Focus:</strong> Random event handling</p>
+                        </div>
+                        <a href="https://cdac.olabs.edu.in/?sub=80&brch=89&sim=986&cnt=4" class="mt-4 inline-flex items-center text-cyan-400 hover:underline text-sm">
+                            View Game <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                <!-- Project Card 3: Fitness Web Application -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 transition duration-300 group project-card">
+                    <div class="h-48 bg-gray-800 flex items-center justify-center relative">
+                        <!-- Game Thumbnail Placeholder -->
+                        <img src="Images\Shapes.png" alt="Web-Application for Fitness" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition">Shapes Zone</h3>
+                        <p class="text-gray-400 text-sm mb-3">Shapes Zone is a 3D game developed in Unity Engine with immersive and interactive environment design it will help students to identify and visualize the shape using real word objects</p>
+                        <div class="text-xs text-gray-500 space-y-1 mt-4">
+                            <p><strong class="text-white">Technologies:</strong> Unity Engine,GoDot,Blender</p>
+                            <p><strong class="text-white">Design:</strong> Adobe Photoshop</p>
+                            <p><strong class="text-white">Focus:</strong> Responsive Design, User Experience, visualisation</p>
+                        </div>
+                         <a href="https://cdac.olabs.edu.in/?sub=80&brch=89&sim=984&cnt=4" class="mt-4 inline-flex items-center text-cyan-400 hover:underline text-sm">
+                            View Game <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                <!-- Project Card 4: Placeholder for Level Design -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 transition duration-300 group project-card">
+                    <div class="h-48 bg-gray-800 flex items-center justify-center relative">
+                        <!-- Game Thumbnail Placeholder -->
+                        <img src="Images\Bank.png" alt="Level Design Showcase" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition">Loan Process</h3>
+                        <p class="text-gray-400 text-sm mb-3">Loan process is an interactive 3D game which help to understand how to apply for loan and which documents are importent for it..</p>
+                        <div class="text-xs text-gray-500 space-y-1 mt-4">
+                            <p><strong class="text-white">Engine:</strong> Unity</p>
+                            <p><strong class="text-white">Modeling:</strong> Blender</p>
+                            <p><strong class="text-white">Role:</strong> Level and models Designer</p>
+                        </div>
+                         <a href="https://www.olabs.edu.in/?sub=107&brch=80&sim=988&cnt=4" class="mt-4 inline-flex items-center text-cyan-400 hover:underline text-sm">
+                            View Game <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+                
+                <!-- Project Card 5: Placeholder for Animation Work -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 transition duration-300 group project-card">
+                    <div class="h-48 bg-gray-800 flex items-center justify-center relative">
+                        <!-- Game Thumbnail Placeholder -->
+                        <img src="Images\Supermarkt.png" alt="Motion Graphics Reel" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition">Role Based Scenario</h3>
+                        <p class="text-gray-400 text-sm mb-3">Role Based Scenario is an activity based game in which user need to follow given insructions and folow them.</p>
+                        <div class="text-xs text-gray-500 space-y-1 mt-4">
+                            <p><strong class="text-white">Software:</strong> Unity Engine</p>
+                            <p><strong class="text-white">Modeling:</strong> Blender</p>
+                            <p><strong class="text-white">Role:</strong> Programming and development</p>
+                        </div>
+                        <a href="https://www.olabs.edu.in/?sub=103&brch=151&sim=1014&cnt=4" class="mt-4 inline-flex items-center text-cyan-400 hover:underline text-sm">
+                            View Game <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                <!-- Project Card 6: Placeholder for UI/UX Project -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 transition duration-300 group project-card">
+                    <div class="h-48 bg-gray-800 flex items-center justify-center relative">
+                        <!-- Game Thumbnail Placeholder -->
+                        <img src="Images\V.jpg" alt="Game UI Prototype" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition">Shapes Zone VR</h3>
+                        <p class="text-gray-400 text-sm mb-3">Shapes Zone VR is a VR game in which user can understand the 3d shapes utilizing the real word visualization in virtual world.</p>
+                        <div class="text-xs text-gray-500 space-y-1 mt-4">
+                            <p><strong class="text-white">Software:</strong> Unity Engine, XR Rig.</p>
+                            <p><strong class="text-white">Store:</strong> Meta Horizon</p>
+                            <p><strong class="text-white">Device:</strong> Meta Quest 2&3</p>
+                        </div>
+                        <a href="https://www.meta.com/en-gb/experiences/solid-3d-shapes-vr-game/24093607800318680/" class="mt-4 inline-flex items-center text-cyan-400 hover:underline text-sm">
+                            View Game <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+            </div>
+            
+            <a href="#models" class="mt-10 mx-auto block w-fit neon-btn">
+                <i data-lucide="gallery-vertical" class="inline w-4 h-4 mr-2"></i> View 3D Model Gallery
+            </a>
+        </section>
+
+
+        <!-- --- -->
+        <!-- 🧠 5. Research & Achievements -->
+        <section id="research" class="py-20 border-t border-cyan-800/30">
+            <h2 class="text-5xl font-bold mb-12 text-center neon-glow">
+                Research & <span class="text-cyan-400">Achievements</span>
+            </h2>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Research Papers -->
+                <div class="bg-gray-900 p-8 rounded-lg border border-purple-800/50">
+                    <h3 class="text-2xl font-semibold mb-4 text-purple-400 flex items-center">
+                        <i data-lucide="file-text" class="w-6 h-6 mr-3"></i> Published Papers
+                    </h3>
+                    <div class="space-y-6">
+                        <!-- Paper 1 -->
+                         <div class="border-l-4 border-purple-500 pl-4">
+                            <h4 class="text-lg font-bold text-white">Introducing Interactive Elements To Mobile Virtual Reality: Leveraging Smartphone Sensors For Immersive Experiences</h4>
+                            <p class="text-sm text-gray-400 mb-2">Topic: AR/VR Focus | Publication: IEEE Xplore: 10 December 2024</p>
+                            <a href="https://ieeexplore.ieee.org/document/10774852" class="text-xs text-cyan-400 hover:underline">View paper</a>
+                        </div>
+                        <!-- Paper 2 -->
+                        <div class="border-l-4 border-purple-500 pl-4">
+                            <h4 class="text-lg font-bold text-white">Analysis of Failed Business Products - The HCI Perspective</h4>
+                            <p class="text-sm text-gray-400 mb-2">Topic: Human-Computer Interaction, Business | Year: 2022</p>
+                            <a href="https://ijsrem.com/download/analysis-of-failed-business-products-the-hci-perspective/" class="text-xs text-cyan-400 hover:underline">View Paper</a>
+                        </div>
+                        <!-- Paper 3: Generic Placeholder based on resume summary mentioning 3 papers -->
+                         <div class="border-l-4 border-purple-500 pl-4">
+                            <h4 class="text-lg font-bold text-white">Unlocking Inclusive Interactive Experiences: A Smartphone-Sensor-Driven Approach to Transform Passive VR</h4>
+                            <p class="text-sm text-gray-400 mb-2">Topic: VR/HCI, Sensor Integration | Year: 2024</p>
+                            <a href="https://bthnl.com/volume-23-issue-12-2023/" class="text-xs text-cyan-400 hover:underline">View Abstract</a>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                <!-- Awards & Recognitions -->
+                <div class="bg-gray-900 p-8 rounded-lg border border-cyan-800/50">
+                    <h3 class="text-2xl font-semibold mb-4 text-cyan-400 flex items-center">
+                        <i data-lucide="trophy" class="w-6 h-6 mr-3"></i> Workshops & Certifications
+                    </h3>
+                    <ul class="space-y-4 text-gray-300">
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-cyan-500 mr-3"></i>
+                            50-hour AR/VR Workshop - APPY MONKEYS SOFTWARE PVT
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-cyan-500 mr-3"></i>
+                            Adobe Premier Pro Certification
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-cyan-500 mr-3"></i>
+                            Google UI/UX Certification
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-cyan-500 mr-3"></i>
+                            C++ Programming Certification
+                        </li>
+                    </ul>
+                    <div class="mt-6 p-4 bg-gray-800 rounded">
+                        <strong class="text-white block mb-1">Blog Writing</strong>
+                        <p class="text-sm text-gray-400">I write a blog about automobile content, merging technical interest with passion.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- --- -->
+        <!-- 🧩 6. 3D Models Page / Gallery (6 models, 2 per row) -->
+        <section id="models" class="py-20 border-t border-cyan-800/30">
+            <h2 class="text-5xl font-bold mb-12 text-center neon-glow">
+                <span class="text-cyan-400">3D</span> Model Gallery
+            </h2>
+
+            <!-- Grid: 6 models, 2 per row on tablets/desktops -->
+            <div class="grid sm:grid-cols-2 gap-8">
+                <!-- Model Card 1 -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] transition duration-300 group">
+                    <div class="aspect-[4/3] bg-gray-800 flex items-center justify-center relative">
+                    <model-viewer 
+                        src="3D models/Iceland Models.glb"
+                        alt="3D Model"
+                        camera-controls
+                        auto-rotate
+                        shadow-intensity="1"
+                        style="width: 100%; height: 100%;">
+                    </model-viewer>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="text-lg font-bold text-white group-hover:text-cyan-400">Connecting islands</h4>
+                        <p class="text-sm text-gray-400">Landing level for VR Shapes Zone game</p>
+                    </div>
+                </div>
+
+                <!-- Model Card 2 -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] transition duration-300 group">
+                    <div class="aspect-[4/3] bg-gray-800 flex items-center justify-center relative">
+                       <model-viewer 
+                        src="3D models\Robo.glb"
+                        alt="3D Model"
+                        camera-controls
+                        auto-rotate
+                        shadow-intensity="1"
+                        style="width: 100%; height: 100%;">
+                    </model-viewer>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="text-lg font-bold text-white group-hover:text-cyan-400">Cute Robo</h4>
+                        <p class="text-sm text-gray-400">Cute Robo of Shapes Zone VR game used for helping player to guid the path</p>
+                    </div>
+                </div>
+                
+                <!-- Model Card 3 -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] transition duration-300 group">
+                    <div class="aspect-[4/3] bg-gray-800 flex items-center justify-center relative">
+                        <model-viewer 
+                            src="3D models\New Learning Car.glb"
+                            alt="3D Model"
+                            camera-controls
+                            auto-rotate
+                            shadow-intensity="1"
+                            style="width: 100%; height: 100%;">
+                        </model-viewer>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="text-lg font-bold text-white group-hover:text-cyan-400">Learning Car</h4>
+                        <p class="text-sm text-gray-400">Car used in Skill lab 3d simulation game to give driving test</p>
+                    </div>
+                </div>
+                
+                <!-- Model Card 4 -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] transition duration-300 group">
+                    <div class="aspect-[4/3] bg-gray-800 flex items-center justify-center relative">
+                        <model-viewer 
+                            src="3D models\School.glb"
+                            alt="3D Model"
+                            camera-controls
+                            auto-rotate
+                            shadow-intensity="1"
+                            style="width: 100%; height: 100%;">
+                        </model-viewer>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="text-lg font-bold text-white group-hover:text-cyan-400">School</h4>
+                        <p class="text-sm text-gray-400">3D model of school from english labr</p>
+                    </div>
+                </div>
+
+                <!-- Model Card 5 -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] transition duration-300 group">
+                    <div class="aspect-[4/3] bg-gray-800 flex items-center justify-center relative">
+                        <model-viewer 
+                            src="3D models\gun.glb"
+                            alt="3D Model"
+                            camera-controls
+                            auto-rotate
+                            shadow-intensity="1"
+                            style="width: 100%; height: 100%;">
+                        </model-viewer>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="text-lg font-bold text-white group-hover:text-cyan-400">Shot Gun</h4>
+                        <p class="text-sm text-gray-400">Wepon used to shoot the bubbles in probability fair game.</p>
+                    </div>
+                </div>
+
+                <!-- Model Card 6 -->
+                <div class="bg-gray-900 rounded-lg overflow-hidden border border-cyan-800/50 hover:shadow-[0_0_20px_rgba(0,255,255,0.4)] transition duration-300 group">
+                    <div class="aspect-[4/3] bg-gray-800 flex items-center justify-center relative">
+                        <model-viewer 
+                            src="3D models\Castle_03.glb"
+                            alt="3D Model"
+                            camera-controls
+                            auto-rotate
+                            shadow-intensity="1"
+                            style="width: 100%; height: 100%;">
+                        </model-viewer>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="text-lg font-bold text-white group-hover:text-cyan-400">Anciant Castle</h4>
+                        <p class="text-sm text-gray-400">Castle from find the area puzzle</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- --- -->
+        
+
+
+        <!-- --- -->
+        <!-- 📬 8. Contact Section -->
+        <section id="contact" class="py-20 border-t border-cyan-800/30">
+            <h2 class="text-5xl font-bold mb-12 text-center neon-glow">
+                <span class="text-cyan-400">Connect</span> with Me
+            </h2>
+
+            <div class="max-w-4xl mx-auto">
+               <div class="grid md:grid-cols-3 gap-6 mb-10 text-center">
+
+  <!-- Email -->
+        <a href="mailto:jeetsonawane0102@gmail.com" 
+            class="p-4 bg-gray-900 rounded-lg border border-cyan-800/50 block hover:bg-cyan-900/20 transition">
+            <i data-lucide="mail" class="w-8 h-8 text-cyan-400 mx-auto mb-2"></i>
+            <p class="font-semibold text-white">Email</p>
+            <p class="text-sm text-gray-400">jeetsonawane0102@gmail.com</p>
+        </a>
+
+        <!-- Phone -->
+        <a href="tel:+919112401020" 
+            class="p-4 bg-gray-900 rounded-lg border border-cyan-800/50 block hover:bg-cyan-900/20 transition">
+            <i data-lucide="phone" class="w-8 h-8 text-cyan-400 mx-auto mb-2"></i>
+            <p class="font-semibold text-white">Phone</p>
+            <p class="text-sm text-gray-400">+91 9112401020</p>
+        </a>
+
+        <!-- Location -->
+        <a href="https://www.google.com/maps/place/CDAC+KHARGHAR/@19.0310053,73.023614,5855m/data=!3m1!1e3!4m6!3m5!1s0x3be7c30013dec4f7:0xabeb9000144d6ca1!8m2!3d19.0266563!4d73.0534341!16s%2Fg%2F11xdk01x06?entry=ttu&g_ep=EgoyMDI1MTAwOC4wIKXMDSoASAFQAw%3D%3D" 
+            target="_blank" 
+            class="p-4 bg-gray-900 rounded-lg border border-cyan-800/50 block hover:bg-cyan-900/20 transition">
+            <i data-lucide="map-pin" class="w-8 h-8 text-cyan-400 mx-auto mb-2"></i>
+            <p class="font-semibold text-white">Location</p>
+            <p class="text-sm text-gray-400">Navi Mumbai, Maharashtra 410210</p>
+        </a>
+
+        </div>
+
+
+              <form action="mailto:jeetsonawane0102@gmail.com" method="post" enctype="text/plain" class="space-y-6 p-8 bg-gray-900 rounded-xl border border-cyan-800/50">
+    <input type="text" name="Name" placeholder="Your Name" class="w-full p-3 rounded bg-gray-800 border border-cyan-900 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" required>
+    <input type="email" name="Email" placeholder="Your Email" class="w-full p-3 rounded bg-gray-800 border border-cyan-900 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" required>
+    <textarea name="Message" placeholder="Your Message" rows="5" class="w-full p-3 rounded bg-gray-800 border border-cyan-900 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" required></textarea>
+    <button type="submit" class="neon-btn w-full !mt-6">Send Message</button>
+</form>
+
+
+                <!-- Social Links & Resume CTA -->
+                <div class="mt-10 flex flex-col items-center space-y-6">
+                    <div class="flex space-x-6">
+                        <!-- LinkedIn -->
+                        <a href="https://linkedin.com/in/prasenjeet-sonawane-6aa942306" target="_blank" class="text-white hover:text-cyan-400 transition neon-glow">
+                            <i data-lucide="linkedin" class="w-8 h-8"></i>
+                        </a>
+                        <!-- GitHub -->
+                        <a href="https://github.com/Jeetu09" target="_blank" class="text-white hover:text-cyan-400 transition neon-glow">
+                            <i data-lucide="github" class="w-8 h-8"></i>
+                        </a>
+                        <!-- ArtStation (represented by paintbrush) -->
+                        <a href="#" target="_blank" class="text-white hover:text-cyan-400 transition neon-glow">
+                            <i data-lucide="paintbrush" class="w-8 h-8"></i>
+                        </a>
+                    </div>
+                    <button onclick="document.getElementById('download-resume').click()" class="neon-btn !mt-6">
+                        <i data-lucide="download" class="inline w-4 h-4 mr-2"></i> Download My Full Resume
+                    </button>
+                    <!-- Hidden element to facilitate the resume download button actions -->
+                    <a id="download-resume" href="CV\Prasenjeet_Sonawane_CV.pdf" download class="hidden"></a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-20 py-8 border-t border-cyan-800/30 text-center text-gray-500">
+        <p class="text-sm">
+            &copy; 2025 Prasenjeet Sonawane. All Rights Reserved.
+        </p>
+        <!-- Footer Easter Egg -->
+        <p class="text-xs italic mt-2 text-cyan-600">
+            Crafted with code and creative vision from Mumbai, India.
+        </p>
+    </footer>
+
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // 1. Loading Screen Logic
+        window.addEventListener('load', () => {
+            const loadingScreen = document.getElementById('loading-screen');
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => loadingScreen.style.display = 'none', 1000); // Hide after transition
+            }, 500); // Display for at least 0.5 seconds
+        });
+
+
+        // 2. Typing Animation Logic for Hero Tagline
+        const tagline = "Unity Engineer | AR/VR Developer | 3D Artist";
+        const taglineElement = document.getElementById('tagline-output');
+        let i = 0;
+        let isDeleting = false;
+        let typeSpeed = 70; // Typing speed in ms
+
+        function typeWriter() {
+            const currentText = tagline.substring(0, i);
+            taglineElement.innerHTML = currentText;
+
+            if (!isDeleting && i < tagline.length) {
+                i++;
+                typeSpeed = Math.random() * 50 + 50; // Variable speed
+            } else if (i >= tagline.length) {
+                // Pause at the end of the sentence before repeating (optional)
+                setTimeout(() => isDeleting = true, 3000);
+            }
+
+            if (isDeleting) {
+                i--;
+                typeSpeed = 30; // Faster deletion
+                if (i <= 0) {
+                    isDeleting = false;
+                    typeSpeed = 150; // Reset typing speed
+                }
+            }
+
+            setTimeout(typeWriter, typeSpeed);
+        }
+
+        // Start the typing effect when the window loads
+        window.onload = typeWriter;
+
+    </script>
+</body>
+</html>
